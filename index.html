@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zelvio Store Gen</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@500;600;700&family=Cabinet+Grotesk:wght@400;500;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #06060f;
+  --s1: #0d0d1a;
+  --s2: #131320;
+  --border: #1e1e35;
+  --border2: #2a2a45;
+  --lime: #c8f135;
+  --cyan: #35f1c8;
+  --purple: #7c5cfc;
+  --text: #ededf5;
+  --muted: #5a5a80;
+  --dim: #252540;
+  --danger: #ff4560;
+  --r: 14px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Cabinet Grotesk',sans-serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;top:-300px;left:50%;transform:translateX(-50%);width:900px;height:600px;background:radial-gradient(ellipse,rgba(124,92,252,.07) 0%,transparent 70%);pointer-events:none;z-index:0}
+
+.app{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:0 20px 80px}
+
+/* HEADER */
+header{padding:40px 0 32px;display:flex;align-items:center;gap:16px;border-bottom:1px solid var(--border);margin-bottom:36px;animation:fadeDown .5s ease both}
+.logo{background:var(--lime);color:#000;font-family:'Clash Display',sans-serif;font-weight:700;font-size:11px;letter-spacing:2px;padding:7px 12px;border-radius:8px;text-transform:uppercase;flex-shrink:0}
+.htxt h1{font-family:'Clash Display',sans-serif;font-size:24px;font-weight:700;letter-spacing:-.5px}
+.htxt h1 em{color:var(--lime);font-style:normal}
+.htxt p{font-size:12px;color:var(--muted);font-family:'Fira Code',monospace;margin-top:3px}
+
+/* STEPS */
+.steps{display:flex;gap:8px;margin-bottom:32px;animation:fadeDown .5s .1s ease both}
+.step-item{flex:1;display:flex;flex-direction:column;gap:5px}
+.step-bar{height:3px;border-radius:99px;background:var(--dim);transition:background .4s;position:relative;overflow:hidden}
+.step-bar.done{background:var(--cyan)}
+.step-bar.active{background:transparent}
+.step-bar.active::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,var(--lime),var(--cyan));animation:barFill .4s ease forwards}
+@keyframes barFill{from{transform:scaleX(0);transform-origin:left}to{transform:scaleX(1)}}
+.step-label{font-size:9px;color:var(--muted);font-family:'Fira Code',monospace;letter-spacing:1px;text-transform:uppercase;transition:color .3s}
+.step-item.active .step-label{color:var(--lime)}
+.step-item.done .step-label{color:var(--cyan)}
+
+/* PANEL */
+.panel{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:26px;margin-bottom:14px;display:none;animation:fadeUp .3s ease both}
+.panel.visible{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.ptitle{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--lime);font-family:'Fira Code',monospace;margin-bottom:22px;display:flex;align-items:center;gap:10px}
+.ptitle::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* FORM */
+.field{margin-bottom:16px}
+label{display:block;font-size:11px;color:var(--muted);margin-bottom:6px;font-family:'Fira Code',monospace}
+label span{color:var(--lime)}
+input[type=text],input[type=url],select{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'Fira Code',monospace;font-size:12px;padding:11px 14px;outline:none;transition:border-color .2s,box-shadow .2s}
+input:focus,select:focus{border-color:var(--lime);box-shadow:0 0 0 3px rgba(200,241,53,.06)}
+select option{background:#0d0d1a}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.row2{grid-template-columns:1fr}}
+
+/* PRODUCT SLOTS */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:16px}
+.pslot{background:var(--bg);border:1px dashed var(--border2);border-radius:12px;padding:14px;transition:border-color .25s,box-shadow .25s;animation:fadeUp .3s ease both}
+.pslot.filled{border-style:solid;border-color:rgba(200,241,53,.35);box-shadow:0 0 20px rgba(200,241,53,.04)}
+.slot-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.slot-num{font-size:9px;color:var(--muted);font-family:'Fira Code',monospace;letter-spacing:1.5px;text-transform:uppercase}
+.slot-dot{width:6px;height:6px;border-radius:50%;background:var(--lime);display:none;box-shadow:0 0 8px var(--lime)}
+.pslot.filled .slot-dot{display:block}
+.slot-rm{background:none;border:none;color:var(--danger);cursor:pointer;font-size:14px;transition:transform .2s;line-height:1}
+.slot-rm:hover{transform:scale(1.2)}
+.sinput{width:100%;background:var(--s1);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Fira Code',monospace;font-size:11px;padding:9px 11px;outline:none;margin-bottom:7px;transition:border-color .2s}
+.sinput:last-child{margin-bottom:0}
+.sinput:focus{border-color:var(--lime)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:10px;font-family:'Cabinet Grotesk',sans-serif;font-weight:700;font-size:14px;cursor:pointer;border:none;transition:all .2s;position:relative;overflow:hidden}
+.btn-lime{background:var(--lime);color:#000;box-shadow:0 4px 24px rgba(200,241,53,.2)}
+.btn-lime:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(200,241,53,.3)}
+.btn-ghost{background:var(--s2);color:var(--muted);border:1px solid var(--border2)}
+.btn-ghost:hover{color:var(--text);border-color:var(--muted)}
+.btn-add{width:100%;background:transparent;border:1px dashed var(--border2);color:var(--muted);border-radius:10px;padding:11px;font-size:13px;cursor:pointer;font-family:'Cabinet Grotesk',sans-serif;transition:all .2s;margin-bottom:16px}
+.btn-add:hover{border-color:var(--lime);color:var(--lime)}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap}
+.btn-sm{padding:8px 16px;font-size:12px;border-radius:8px}
+
+/* STATUS */
+.status-bar{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;margin-bottom:14px;font-family:'Fira Code',monospace;font-size:12px}
+.pdot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.pdot.loading{background:var(--lime);box-shadow:0 0 10px var(--lime);animation:pulse 1.2s ease-in-out infinite}
+.pdot.done{background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+.pdot.error{background:var(--danger)}
+.pdot.idle{background:var(--dim)}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+.prog-track{height:2px;background:var(--dim);border-radius:99px;overflow:hidden;margin-bottom:16px}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--lime),var(--cyan));border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+
+/* LOADING */
+.loading-wrap{padding:40px 0;display:flex;flex-direction:column;align-items:center;gap:18px}
+.spinner{width:44px;height:44px;border:2px solid var(--border2);border-top-color:var(--lime);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-txt{font-family:'Fira Code',monospace;font-size:12px;color:var(--muted);text-align:center}
+.loading-step{font-size:11px;color:var(--lime);font-family:'Fira Code',monospace;animation:blink 1s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* PREVIEW */
+.preview-wrap{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--border2);margin-bottom:14px}
+.preview-bar{background:var(--bg);padding:10px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+.preview-dots{display:flex;gap:5px}
+.preview-dot{width:10px;height:10px;border-radius:50%}
+.preview-url{flex:1;background:var(--s1);border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-family:'Fira Code',monospace;font-size:10px;color:var(--muted);text-align:center}
+.preview-frame{width:100%;height:600px;border:none;background:#fff}
+
+/* ERROR */
+.err-box{background:rgba(255,69,96,.06);border:1px solid rgba(255,69,96,.2);border-radius:10px;padding:16px;font-family:'Fira Code',monospace;font-size:11px;color:#ff8090;white-space:pre-wrap;word-break:break-word;margin-top:10px}
+
+/* NOTIF */
+#notif{position:fixed;bottom:24px;right:24px;background:var(--lime);color:#000;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:700;font-family:'Cabinet Grotesk',sans-serif;z-index:9999;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none}
+#notif.show{opacity:1;transform:translateY(0)}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+
+<header>
+  <div class="logo">Zelvio</div>
+  <div class="htxt">
+    <h1>Store Generator <em>IA</em></h1>
+    <p>// génère ta boutique complète en quelques secondes</p>
+  </div>
+</header>
+
+<div class="steps" id="stepsWrap"></div>
+
+<!-- PANEL 1 -->
+<div class="panel visible" id="panel1">
+  <div class="ptitle">① Ta boutique</div>
+  <div class="row2">
+    <div class="field">
+      <label>Niche <span>*</span></label>
+      <input type="text" id="niche" placeholder="sport, bébé, maison, beauté..."/>
+    </div>
+    <div class="field">
+      <label>Langue</label>
+      <select id="langue">
+        <option value="français">🇫🇷 Français</option>
+        <option value="anglais">🇬🇧 Anglais</option>
+      </select>
+    </div>
+  </div>
+  <div class="field">
+    <label>URL boutique concurrente <span style="color:var(--muted)">(optionnel)</span></label>
+    <input type="url" id="concurrent" placeholder="https://boutique-concurrente.com"/>
+  </div>
+  <div class="field">
+    <label>Couleurs souhaitées <span style="color:var(--muted)">(optionnel)</span></label>
+    <input type="text" id="couleurs" placeholder="ex: noir et or, bleu marine, minimaliste blanc..."/>
+  </div>
+  <div class="field">
+    <label>Promesse / Angle marketing <span style="color:var(--muted)">(optionnel)</span></label>
+    <input type="text" id="angle" placeholder="ex: Soulagez vos douleurs lombaires dès la première utilisation"/>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-lime" onclick="goStep2()">Suivant → Produits</button>
+  </div>
+</div>
+
+<!-- PANEL 2 -->
+<div class="panel" id="panel2">
+  <div class="ptitle">② Tes produits (max 3)</div>
+  <div class="pgrid" id="pgrid"></div>
+  <button class="btn-add" id="addBtn" onclick="addProduct()">＋ Ajouter un produit</button>
+  <div class="btn-row">
+    <button class="btn btn-ghost" onclick="goStep1()">← Retour</button>
+    <button class="btn btn-lime" onclick="generate()">⚡ Générer ma boutique</button>
+  </div>
+</div>
+
+<!-- PANEL 3 -->
+<div class="panel" id="panel3">
+  <div class="ptitle">③ Ta boutique</div>
+
+  <div class="status-bar">
+    <div class="pdot idle" id="pdot"></div>
+    <span id="statusTxt" style="font-family:'Fira Code',monospace;font-size:12px">En attente...</span>
+  </div>
+  <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+
+  <div class="loading-wrap hidden" id="loadWrap">
+    <div class="spinner"></div>
+    <div class="loading-txt">L'IA crée ta boutique complète...</div>
+    <div class="loading-step" id="loadStep">→ Initialisation</div>
+  </div>
+
+  <div class="err-box hidden" id="errBox"></div>
+
+  <div id="resultWrap" class="hidden">
+    <div class="preview-wrap">
+      <div class="preview-bar">
+        <div class="preview-dots">
+          <div class="preview-dot" style="background:#ff5f57"></div>
+          <div class="preview-dot" style="background:#febc2e"></div>
+          <div class="preview-dot" style="background:#28c840"></div>
+        </div>
+        <div class="preview-url" id="previewUrl">ta-boutique.html</div>
+      </div>
+      <iframe id="previewFrame" class="preview-frame"></iframe>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-lime" onclick="downloadHtml()">⬇ Télécharger ma boutique</button>
+      <button class="btn btn-ghost btn-sm" onclick="resetApp()">↺ Nouvelle boutique</button>
+    </div>
+  </div>
+
+</div>
+</div>
+<div id="notif"></div>
+
+<script>
+let products = [];
+let generatedHtml = "";
+const STEPS = ["Config","Produits","Boutique"];
+const loadSteps = [
+  "→ Analyse de la niche...",
+  "→ Création du design...",
+  "→ Rédaction du copywriting...",
+  "→ Génération des sections...",
+  "→ Optimisation conversion...",
+  "→ Finalisation de la boutique...",
+];
+
+window.onload = () => { renderSteps(0); addProduct(); };
+
+function renderSteps(active) {
+  document.getElementById("stepsWrap").innerHTML = STEPS.map((l,i) => {
+    const c = i < active ? "done" : i === active ? "active" : "";
+    return `<div class="step-item ${c}"><div class="step-bar ${c}"></div><div class="step-label">${l}</div></div>`;
+  }).join("");
+}
+
+function showPanel(n) {
+  document.querySelectorAll(".panel").forEach(p => p.classList.remove("visible"));
+  document.getElementById("panel"+n).classList.add("visible");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function goStep1() { showPanel(1); renderSteps(0); }
+function goStep2() {
+  if (!document.getElementById("niche").value.trim()) { notify("❌ Indique la niche"); return; }
+  showPanel(2); renderSteps(1);
+}
+
+function addProduct() {
+  if (products.length >= 3) { notify("Maximum 3 produits"); return; }
+  products.push({id: Date.now(), link:"", name:"", price:""});
+  renderProducts();
+  if (products.length >= 3) document.getElementById("addBtn").style.display = "none";
+}
+
+function removeProduct(id) {
+  products = products.filter(p => p.id !== id);
+  renderProducts();
+  document.getElementById("addBtn").style.display = "";
+}
+
+function updateProduct(id, field, val) {
+  const p = products.find(p => p.id === id);
+  if (p) p[field] = val;
+  const slot = document.getElementById("slot-"+id);
+  if (slot) slot.className = "pslot" + (p.link||p.name ? " filled" : "");
+}
+
+function renderProducts() {
+  document.getElementById("pgrid").innerHTML = products.map((p,i) => `
+    <div class="pslot ${p.link||p.name?"filled":""}" id="slot-${p.id}">
+      <div class="slot-hd">
+        <div class="slot-num">Produit ${i+1}</div>
+        <div class="slot-dot"></div>
+        ${products.length > 1 ? `<button class="slot-rm" onclick="removeProduct(${p.id})">✕</button>` : ""}
+      </div>
+      <input class="sinput" type="url" placeholder="Lien AliExpress / CJ..." value="${p.link}" oninput="updateProduct(${p.id},'link',this.value)"/>
+      <input class="sinput" type="text" placeholder="Nom du produit" value="${p.name}" oninput="updateProduct(${p.id},'name',this.value)"/>
+      <input class="sinput" type="text" placeholder="Prix ex: 59.99€" value="${p.price}" oninput="updateProduct(${p.id},'price',this.value)" style="margin-bottom:0"/>
+    </div>
+  `).join("");
+}
+
+async function generate() {
+  const prods = products.filter(p => p.link || p.name);
+  if (!prods.length) { notify("❌ Ajoute au moins un produit"); return; }
+
+  showPanel(3); renderSteps(2);
+  setStatus("loading","⚡ Génération en cours...");
+  setProgress(5);
+  document.getElementById("loadWrap").classList.remove("hidden");
+  document.getElementById("resultWrap").classList.add("hidden");
+  document.getElementById("errBox").classList.add("hidden");
+
+  let si = 0;
+  const interval = setInterval(() => {
+    if (si < loadSteps.length) {
+      document.getElementById("loadStep").textContent = loadSteps[si++];
+      setProgress(5 + (si/loadSteps.length)*60);
+    }
+  }, 4000);
+
+  const config = {
+    niche: document.getElementById("niche").value.trim(),
+    langue: document.getElementById("langue").value,
+    concurrent: document.getElementById("concurrent").value.trim(),
+    couleurs: document.getElementById("couleurs").value.trim(),
+    angle: document.getElementById("angle").value.trim(),
+  };
+
+  try {
+    const resp = await fetch("/api/generate", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({config, products: prods}),
+    });
+
+    clearInterval(interval);
+    setProgress(90);
+
+    const json = await resp.json();
+    if (!resp.ok || !json.success) throw new Error(json.error || "Erreur serveur");
+
+    generatedHtml = json.html;
+    setProgress(100);
+    setStatus("done","✅ Boutique générée avec succès !");
+    document.getElementById("loadWrap").classList.add("hidden");
+
+    // Afficher dans iframe
+    const iframe = document.getElementById("previewFrame");
+    iframe.srcdoc = generatedHtml;
+    document.getElementById("previewUrl").textContent = config.niche.replace(/\s+/g,"-").toLowerCase() + "-boutique.html";
+    document.getElementById("resultWrap").classList.remove("hidden");
+
+  } catch(err) {
+    clearInterval(interval);
+    setStatus("error","❌ Erreur");
+    document.getElementById("loadWrap").classList.add("hidden");
+    const eb = document.getElementById("errBox");
+    eb.textContent = err.message;
+    eb.classList.remove("hidden");
+  }
+}
+
+function downloadHtml() {
+  if (!generatedHtml) return;
+  const niche = document.getElementById("niche").value.trim().replace(/\s+/g,"-").toLowerCase();
+  const blob = new Blob([generatedHtml], {type:"text/html;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = niche + "-boutique.html";
+  a.click();
+  notify("⬇ Boutique téléchargée !");
+}
+
+function setStatus(type, txt) {
+  document.getElementById("pdot").className = "pdot " + type;
+  document.getElementById("statusTxt").textContent = txt;
+}
+function setProgress(p) { document.getElementById("progFill").style.width = p + "%"; }
+function notify(msg) {
+  const n = document.getElementById("notif");
+  n.textContent = msg; n.classList.add("show");
+  setTimeout(() => n.classList.remove("show"), 2500);
+}
+function resetApp() {
+  products = []; generatedHtml = "";
+  document.getElementById("niche").value = "";
+  document.getElementById("concurrent").value = "";
+  document.getElementById("couleurs").value = "";
+  document.getElementById("angle").value = "";
+  document.getElementById("addBtn").style.display = "";
+  addProduct(); goStep1();
+  setStatus("idle","En attente..."); setProgress(0);
+}
+</script>
+</body>
+</html>
